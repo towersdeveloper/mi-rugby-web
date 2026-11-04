@@ -187,6 +187,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 <body>
 <div id="app"></div>
 <div id="toast" hidden></div>
+<!-- Firebase (solo web): analiticas de los que entran por el navegador -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
 <script>
 const K='rugby-log-v1';
 const POS=['Pilar','Hooker','Segunda línea','Ala','Octavo','Medio scrum','Apertura','Centro','Wing','Fullback'];
@@ -221,8 +224,22 @@ const has=v=>!UNL[v]||CT.lvl>=UNL[v];
 const NAT=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 const PL=n=>NAT&&window.Capacitor&&Capacitor.Plugins?Capacitor.Plugins[n]:null;
 let _scr='';
-function track(n,pr){const fa=PL('FirebaseAnalytics');if(fa)try{fa.logEvent({name:n,params:pr||{}})}catch(e){}}
-function trackScreen(n){const fa=PL('FirebaseAnalytics');if(fa&&n!==_scr){_scr=n;try{fa.setScreenName({screenName:n,nameOverride:n})}catch(e){}}}
+/* ===== Firebase Analytics WEB =====
+   Pegá acá el bloque firebaseConfig que te da la consola de Firebase al crear la "app web".
+   Mientras measurementId no empiece con "G-", las analiticas web quedan apagadas (no rompe nada). */
+const FBWEB={
+  apiKey:"AIzaSyBDuAKuSZjGREhjnlgQbj6Ghm5UGwS6EHI",
+  authDomain:"mi-rugby.firebaseapp.com",
+  projectId:"mi-rugby",
+  storageBucket:"mi-rugby.firebasestorage.app",
+  messagingSenderId:"1012708884552",
+  appId:"PEGAR_APP_ID_WEB",
+  measurementId:"PEGAR_MEASUREMENT_ID"
+};
+let _fbA=null;
+if(!NAT){try{if(window.firebase&&FBWEB.measurementId.indexOf('G-')===0){firebase.initializeApp(FBWEB);_fbA=firebase.analytics();}}catch(e){}}
+function track(n,pr){const fa=PL('FirebaseAnalytics');if(fa){try{fa.logEvent({name:n,params:pr||{}})}catch(e){}return;}if(_fbA){try{_fbA.logEvent(n,pr||{})}catch(e){}}}
+function trackScreen(n){const fa=PL('FirebaseAnalytics');if(fa){if(n!==_scr){_scr=n;try{fa.setScreenName({screenName:n,nameOverride:n})}catch(e){}}return;}if(_fbA&&n!==_scr){_scr=n;try{_fbA.logEvent('screen_view',{firebase_screen:n,firebase_screen_class:n})}catch(e){}}}
 let _wst='';
 function widgetState(){const act=S.inj.filter(i=>!i.ok);if(act.length)return 'injured';const si=streakInfo();const left=7-((new Date().getDay()+6)%7);if(si.cur>0&&!si.thisWeek&&!si.rest&&left<=2)return 'streak';const last=actDates().sort().pop();const idle=last?Math.round((Date.parse(today())-Date.parse(last))/864e5):0;if(idle>=10)return 'idle';const lm=[...S.m].sort((a,b)=>a.d<b.d?1:-1)[0];const won=!!lm&&lm.gf>lm.ga&&(Date.parse(today())-Date.parse(lm.d))/864e5<=7;return won?'cheer':'normal'}
 function saveWidget(){const pf=PL('Preferences');if(!pf)return;const st=widgetState();if(st===_wst)return;_wst=st;try{pf.set({key:'widgetState',value:st})}catch(e){}}
@@ -1013,7 +1030,7 @@ setInterval(()=>{document.querySelectorAll('[data-until]').forEach(el=>{const t=
 $('#toast').addEventListener('click',e=>{e.currentTarget.hidden=true});setInterval(()=>{if(AD.ok)refreshAdBtns()},30000);setInterval(check,20000);check();applyColor();render();
 if(NAT){syncNotifs(false);adsInit();setTimeout(checkUpd,2500);{const fa=PL('FirebaseAnalytics');if(fa)try{fa.setCollectionEnabled({enabled:!S.noAds})}catch(e){}}const ap=PL('App');if(ap)ap.addListener('resume',()=>{syncNotifs(false);render();checkUpd()});if(ap)ap.addListener('backButton',()=>{if(document.getElementById('updgate')){ap.exitApp();return}const m=document.querySelector('.modal');if(m){m.remove();if(m.id==='popm')pop.shift();showPop();return}if(view==='locker'){view='main';render();return}if(tab!=='perfil'){tab='perfil';view='main';render();window.scrollTo(0,0);return}ap.exitApp()})}
 if(!NAT&&'serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-if(!NAT){var _ua=navigator.userAgent,_isIOS=/iphone|ipad|ipod/i.test(_ua),_isAndroid=/android/i.test(_ua),_defIns=null;
+if(!NAT){var _ua=navigator.userAgent,_isIOS=/iphone|ipad|ipod/i.test(_ua),_isAndroid=(/android/i.test(_ua)||(navigator.userAgentData&&navigator.userAgentData.platform==='Android')||false),_defIns=null;
  var STORE='https://play.google.com/store/apps/details?id=com.mirugby.app';
  var _isStand=function(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true};
  var _insDismissed=function(){try{return localStorage.getItem('installDismissed')==='1'}catch(e){return false}};
