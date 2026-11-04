@@ -1017,7 +1017,7 @@ if(!NAT){var _ua=navigator.userAgent,_isIOS=/iphone|ipad|ipod/i.test(_ua),_isAnd
  var STORE='https://play.google.com/store/apps/details?id=com.mirugby.app';
  var _isStand=function(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true};
  var _insDismissed=function(){try{return localStorage.getItem('installDismissed')==='1'}catch(e){return false}};
- function _showInstall(mode){if(_isStand()||document.getElementById('insm'))return;if(mode!=='android'&&_insDismissed())return;
+ function _showInstall(mode){if(document.getElementById('insm'))return;if(mode!=='android'&&(_isStand()||_insDismissed()))return;
   var body,title;
   if(mode==='android'){title='Bajá la app';body='<p>Mi Rugby está disponible como app oficial, <b>gratis</b> en Google Play: notificaciones, widget y funciona sin internet. Descargala para jugar.</p><button class="btn" data-act="goplay">Descargar en Google Play</button>';}
   else if(mode==='ios'){title='Tenela en tu iPhone';body='<p>Para usarla como app: tocá <b>Compartir</b> (abajo en Safari) y elegí <b>“Agregar a la pantalla de inicio”</b>.</p><button class="btn" data-act="installno">Entendido</button>';}
@@ -1025,9 +1025,10 @@ if(!NAT){var _ua=navigator.userAgent,_isIOS=/iphone|ipad|ipod/i.test(_ua),_isAnd
   var m=document.createElement('div');m.className='modal';m.id='insm';m.setAttribute('role','dialog');
   m.innerHTML='<div class="mcard"><div class="k hd">Mi Rugby</div>'+icon('jugador',96)+'<h2 class="hd">'+title+'</h2>'+body+'</div>';
   document.body.appendChild(m)}
+ // Bloquea el instalador nativo de Chrome en Android (que no puedan instalar la web y jugar sin anuncios). En Android solo va a la Play Store.
+ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();if(_isAndroid)return;_defIns=e;setTimeout(function(){_showInstall('desktop')},1400)});
  if(_isAndroid)window.addEventListener('load',function(){setTimeout(function(){_showInstall('android')},1400)});
  else if(_isIOS)window.addEventListener('load',function(){setTimeout(function(){_showInstall('ios')},1800)});
- else window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_defIns=e;setTimeout(function(){_showInstall('desktop')},1400)});
  window._goPlay=function(){location.href=STORE};
  window._installPrompt=function(){if(_defIns){_defIns.prompt();_defIns.userChoice.finally(function(){_defIns=null;var m=document.getElementById('insm');if(m)m.remove()})}else{window._installDismiss()}};
  window._installDismiss=function(){try{localStorage.setItem('installDismissed','1')}catch(e){}var m=document.getElementById('insm');if(m)m.remove()};
