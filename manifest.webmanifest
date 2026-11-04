@@ -1,0 +1,20 @@
+{
+  "name": "Mi Rugby",
+  "short_name": "Mi Rugby",
+  "description": "Tu rugby como un juego: registrá entrenamientos, partidos, bronco y lesiones, subí de nivel y ganá insignias.",
+  "lang": "es-AR",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e8f3fb",
+  "theme_color": "#1f8a4c",
+  "categories": ["sports", "health", "fitness"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
