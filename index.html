@@ -1025,9 +1025,10 @@ if(!NAT){var _ua=navigator.userAgent,_isIOS=/iphone|ipad|ipod/i.test(_ua),_isAnd
   var m=document.createElement('div');m.className='modal';m.id='insm';m.setAttribute('role','dialog');
   m.innerHTML='<div class="mcard"><div class="k hd">Mi Rugby</div>'+icon('jugador',96)+'<h2 class="hd">'+title+'</h2>'+body+'</div>';
   document.body.appendChild(m)}
- // Bloquea el instalador nativo de Chrome en Android (que no puedan instalar la web y jugar sin anuncios). En Android solo va a la Play Store.
+ // Bloquea el instalador nativo de Chrome en Android (que no puedan instalar la web y jugar sin anuncios).
  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();if(_isAndroid)return;_defIns=e;setTimeout(function(){_showInstall('desktop')},1400)});
- if(_isAndroid)window.addEventListener('load',function(){setTimeout(function(){_showInstall('android')},1400)});
+ // En ANDROID no se puede usar la web: lo mandamos derecho a la Play Store. (Respaldo: pared sin salida si el redirect no dispara.)
+ if(_isAndroid){try{location.replace(STORE)}catch(e){try{location.href=STORE}catch(e2){}}window.addEventListener('load',function(){_showInstall('android')});}
  else if(_isIOS)window.addEventListener('load',function(){setTimeout(function(){_showInstall('ios')},1800)});
  window._goPlay=function(){location.href=STORE};
  window._installPrompt=function(){if(_defIns){_defIns.prompt();_defIns.userChoice.finally(function(){_defIns=null;var m=document.getElementById('insm');if(m)m.remove()})}else{window._installDismiss()}};
