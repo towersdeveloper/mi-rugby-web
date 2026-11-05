@@ -339,8 +339,8 @@ function stand(pose){
  if(hd==='Casco'||hd==='Casco dorado'){p(6,-1,8,1,'kc');p(5,0,10,3,'kc');p(4,2,2,5,'kc');p(14,2,2,5,'kc');p(7,0,1,3,'kd');p(12,0,1,3,'kd');p(5,2,10,1,'kd')}
  return outline(g);
 }
-// El jugador con los brazos arriba sosteniendo una claqueta de cine que dice "x3"
-function clapSprite(u){
+// Claqueta de cine que dice "x3" (sola, o con el jugador sosteniéndola si conJugador es true)
+function clapSprite(u,conJugador){
  const ch=stand('clap'),cw=ch[0].length,W=32,H=24,cg=mk(W,H);
  const set=(x,y,c)=>{if(y>=0&&y<H&&x>=0&&x<W)cg[y][x]=c};
  const L=3,R=28;                                                    // bordes izquierdo y derecho
@@ -354,10 +354,12 @@ function clapSprite(u){
   for(let r=0;r<5;r++)set(x,yt+r,(r===0||r===4||x===L||x===R)?'k':((((x-r)/3)|0)%2?'W':'k'))}
  set(L-1,7,'k');set(L-1,8,'k');set(L-1,9,'k');set(L,8,'G');set(L+1,8,'G');set(L,7,'G');          // bisagra
  outline(cg);
+ const pal2={D:'#2b3440',Y:'#f2c230',G:'#8a97a6'};
+ if(!conJugador)return px(cg,u,pal2);
  const oy=H-1-7,ox=Math.round((W-cw)/2),G=mk(W,oy+ch.length);
  ch.forEach((row,y)=>row.forEach((c,x)=>{if(c!=='.'&&x+ox<W)G[y+oy][x+ox]=c}));
  cg.forEach((row,y)=>row.forEach((c,x)=>{if(c!=='.')G[y][x]=c}));
- return px(G,u,{D:'#2b3440',Y:'#f2c230',G:'#8a97a6'})}
+ return px(G,u,pal2)}
 const HOSP='<div class="floor"></div><div class="win"></div><div class="cross"></div><div class="mon"><svg viewBox="0 0 60 30" aria-hidden="true"><polyline points="0,15 12,15 16,4 20,26 24,15 36,15 39,11 42,15 60,15" fill="none" stroke="#3dff7a" stroke-width="2"/></svg></div>';
 const HEAD=["...ss....",".sssssms.",".hHessss.","hhhssssss","hhhsSssss","hhhhhhhhs","hhhhhhhh.","hhhhhhhh.",".hhhhh..."];
 function lying(){
@@ -533,14 +535,14 @@ async function watchReward(){const am=PL('AdMob');if(!am||!rwCan())return;
 function grantReward(){const r0=recs(),d=today(),w=rwState();S.adxp[d]=adToday()+1;S.adLast=Date.now();
  if(w.n===0)w.t=Date.now();w.n++;track('ver_video_premio',{n:w.n});
  const chain=!w.no,more=w.n<REWARD_SET;
- if(!more&&chain)pop.push({svg:clapSprite(4),k:'¡Toma final!',title:`XP triplicada: +${REWARD_XP*REWARD_SET} XP`,sub:'Los puntos se sumaron a tu progreso.'});
+ if(!more&&chain)pop.push({svg:clapSprite(7),k:'¡Toma final!',title:`XP triplicada: +${REWARD_XP*REWARD_SET} XP`,sub:'Los puntos se sumaron a tu progreso.'});
  else if(!(more&&chain))pop.push({svg:icon('skills',96),k:'Recompensa obtenida',title:`+${REWARD_XP} XP`,sub:'Los puntos se sumaron a tu progreso.'});
  syncAll();newRecs(r0,recs());save();render();
  if(more&&chain)triModal(w.n);else showPop()}
 // Cartel de triplicar, con el jugador sosteniendo una claqueta de cine
 function triModal(step){const old=$('#trim');if(old)old.remove();const first=step===1;
  const m=document.createElement('div');m.className='modal';m.id='trim';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
- m.innerHTML=`<div class="mcard tri"><div class="k hd">${first?'Toma 1 lista':'Toma 2 lista'}</div>${clapSprite(4)}
+ m.innerHTML=`<div class="mcard tri"><div class="k hd">${first?'Toma 1 lista':'Toma 2 lista'}</div>${clapSprite(7)}
   <h2 class="hd">${first?'¿Triplicás tu XP?':'Te falta una toma'}</h2>
   <p>${first?`Ya sumaste +${REWARD_XP} XP. Mirá 2 videos más y te llevás +${REWARD_XP*REWARD_SET} XP en total.`:`Llevás +${REWARD_XP*2} XP. Mirá el último video y completás +${REWARD_XP*REWARD_SET} XP.`}</p>
   <button class="btn" data-act="triyes">${first?'Sí, triplicar':'Ver el último video'}</button>
