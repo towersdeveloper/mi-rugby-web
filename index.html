@@ -228,13 +228,13 @@ let _scr='';
    Pegá acá el bloque firebaseConfig que te da la consola de Firebase al crear la "app web".
    Mientras measurementId no empiece con "G-", las analiticas web quedan apagadas (no rompe nada). */
 const FBWEB={
-  apiKey:"AIzaSyBDuAKuSZjGREhjnlgQbj6Ghm5UGwS6EHI",
-  authDomain:"mi-rugby.firebaseapp.com",
-  projectId:"mi-rugby",
-  storageBucket:"mi-rugby.firebasestorage.app",
-  messagingSenderId:"1012708884552",
-  appId:"PEGAR_APP_ID_WEB",
-  measurementId:"PEGAR_MEASUREMENT_ID"
+  apiKey:"AIzaSyC3e0bhM_xoNOAw7qE7ONTUoLWjvHiFKAw",
+  authDomain:"mi-rugby-web.firebaseapp.com",
+  projectId:"mi-rugby-web",
+  storageBucket:"mi-rugby-web.firebasestorage.app",
+  messagingSenderId:"824356314426",
+  appId:"1:824356314426:web:1044c9c9ceb609861c4403",
+  measurementId:"G-3PPP0TZBHJ"
 };
 let _fbA=null;
 if(!NAT){try{if(window.firebase&&FBWEB.measurementId.indexOf('G-')===0){firebase.initializeApp(FBWEB);_fbA=firebase.analytics();}}catch(e){}}
