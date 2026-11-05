@@ -163,6 +163,12 @@ section .restbox{background:var(--bg);margin:12px 0 0}.wk i.now{outline:2px soli
 .mcard img{display:block;width:100%;max-height:58vh;object-fit:contain;border-radius:12px;margin-bottom:14px}
 .mcard .btn+.btn{margin-top:8px}
 .adslot .btn{margin:0 0 16px}
+.mcard.tri svg{margin:0 auto 8px}.mcard .trin{display:block;margin-top:10px;color:var(--mut);font-size:13px}
+#adboard{position:fixed;left:0;right:0;bottom:0;z-index:4;pointer-events:none;border-top:3px solid #f4f6f8;box-shadow:0 -3px 0 rgba(0,0,0,.25);
+ background:repeating-linear-gradient(90deg,#2f8f4a 0 26px,#2a8243 26px 52px)}
+#adboard[hidden]{display:none}
+#adboard .lab{height:22px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#f4f6f8;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+#adboard .lab i{width:7px;height:7px;background:#ffe98a;box-shadow:0 0 6px 2px rgba(255,233,138,.7)}
 @keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.mcard{animation:none}}
 .lock{height:320px;background:repeating-linear-gradient(90deg,#4a6a8c 0 62px,#34506f 62px 64px);box-shadow:0 6px 0 #1f3247}
@@ -286,7 +292,7 @@ const mk=(w,h)=>Array.from({length:h},()=>Array(w).fill('.'));
 const put=(g,x,y,w,h,ch)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)g[y+j+2][x+i+2]=ch};
 function outline(g){const c=g.map(r=>[...r]);for(let y=0;y<g.length;y++)for(let x=0;x<g[0].length;x++){if(c[y][x]!=='.')continue;if([[0,1],[0,-1],[1,0],[-1,0]].some(([a,b])=>{const v=(c[y+b]||[])[x+a];return v&&v!=='.'}))g[y][x]='k'}return g}
 function stand(pose){
- pose=pose||'stand';const sit=pose==='sit',up=pose==='cheer',DX=sit?5:0,DY=up?5:0;
+ pose=pose||'stand';const sit=pose==='sit',clap=pose==='clap',up=pose==='cheer'||clap,DX=sit?5:0,DY=clap?13:up?5:0;
  const g=mk(22+DX*2,(sit?34:37)+DY),p=(x,y,w,h,c)=>put(g,x+DX,y+DY,w,h,c),st=S.p.style,of=S.p.outfit,jog=of==='Jogging',lg=of!=='Rugby';
  if(sit){p(-4,23,28,2,'o');p(-4,23,28,1,'O');p(-3,25,2,5,'o');p(21,25,2,5,'o')}
  if(sit){
@@ -305,7 +311,7 @@ function stand(pose){
  if(up){
   const arm=x=>{if(lg){p(x,2,3,11,'j');p(x,2,3,1,'J')}else{p(x,8,3,5,'j');p(x,8,3,1,'J');p(x,2,3,6,'s')}p(x,0,3,2,'s')};
   arm(2);arm(15);
-  p(15,-4,4,1,'o');p(14,-3,6,2,'o');p(15,-1,4,1,'o');p(15,-3,4,1,'O');p(16,-2,2,1,'L');
+  if(!clap){p(15,-4,4,1,'o');p(14,-3,6,2,'o');p(15,-1,4,1,'o');p(15,-3,4,1,'O');p(16,-2,2,1,'L')}
  }else{
   if(lg){p(2,12,3,8,'j');p(15,12,3,8,'j');p(2,19,3,1,'J');p(15,19,3,1,'J');if(!jog){p(2,12,3,3,'J');p(15,12,3,3,'J')}}
   else{p(2,12,3,4,'j');p(2,15,3,1,'J');p(2,16,3,4,'s');p(4,16,1,4,'S');p(15,12,3,4,'j');p(15,15,3,1,'J');p(15,16,3,4,'s');p(15,16,1,4,'S')}
@@ -324,6 +330,13 @@ function stand(pose){
  const hd=has(S.p.head)?S.p.head:'Nada';
  if(hd.indexOf('Vincha')===0){p(5,2,10,1,'K');p(15,2,1,3,'K')}
  if(hd==='Casco'||hd==='Casco dorado'){p(6,-1,8,1,'kc');p(5,0,10,3,'kc');p(4,2,2,5,'kc');p(14,2,2,5,'kc');p(7,0,1,3,'kd');p(12,0,1,3,'kd');p(5,2,10,1,'kd')}
+ if(clap){// claqueta de cine sostenida con las dos manos, con "x3" escrito
+  for(let x=1;x<=18;x++){const ty=-11-((x-1)>>3);p(x,ty,1,2,((x>>1)%2)?'k':'W');p(x,-8,1,2,(((x+1)>>1)%2)?'k':'W')}
+  p(1,-10,1,3,'Z');
+  p(1,-6,18,6,'k');p(2,-6,16,1,'n');
+  ['W.W','W.W','.W.','W.W','W.W'].forEach((r,j)=>[...r].forEach((c,i)=>{if(c==='W')p(7+i,-5+j,1,1,'W')}));
+  ['WWW','..W','.WW','..W','WWW'].forEach((r,j)=>[...r].forEach((c,i)=>{if(c==='W')p(11+i,-5+j,1,1,'W')}));
+  p(2,0,3,2,'s');p(15,0,3,2,'s')}
  return outline(g);
 }
 const HOSP='<div class="floor"></div><div class="win"></div><div class="cross"></div><div class="mon"><svg viewBox="0 0 60 30" aria-hidden="true"><polyline points="0,15 12,15 16,4 20,26 24,15 36,15 39,11 42,15 60,15" fill="none" stroke="#3dff7a" stroke-width="2"/></svg></div>';
@@ -448,7 +461,7 @@ function streakInfo(){const ws=new Set(actDates().map(wkOf)),rs=new Set(S.rest.f
    se reemplazan los AD_IDS por los reales y AD_TEST pasa a false. */
 const AD_TEST=false;
 const AD_IDS={banner:'ca-app-pub-1767135628664952/7451260315',inter:'ca-app-pub-1767135628664952/9653172811',reward:'ca-app-pub-1767135628664952/2041266948'};
-const REWARD_XP=20,REWARD_H=7,REWARD_MAX=2,REWARD_CD=REWARD_H*3600e3,BANNER_TABS=['habilidades','partidos','bronco','lesiones','logros','avisos'];
+const REWARD_XP=20,REWARD_H=3,REWARD_SET=3,REWARD_CD=REWARD_H*3600e3,BANNER_TABS=['habilidades','partidos','bronco','lesiones','logros','avisos'];
 const KICK_MAX=2,KICK_XP=5;
 if(!S.adxp||typeof S.adxp!=='object')S.adxp={};
 if(S.firstSaveDone===undefined)S.firstSaveDone=S.logs.length>0||S.m.length>0;
@@ -473,25 +486,52 @@ async function adsInit(){const am=PL('AdMob');if(!am||S.noAds)return;
  prepReward();prepInter();updBanner();refreshAdBtns();
  const pl=document.querySelector('[data-adpriv]');if(pl&&AD.privacy)pl.hidden=false}
 async function prepReward(){const am=PL('AdMob');if(!am||!AD.ok)return;
- try{await am.prepareRewardVideoAd(adOpts(AD_IDS.reward));AD.rewardReady=true;AD.rfail=false}catch(e){AD.rewardReady=false;AD.rfail=true;setTimeout(prepReward,90000)}refreshAdBtns()}
+ try{await am.prepareRewardVideoAd(adOpts(AD_IDS.reward));AD.rewardReady=true;AD.rfail=false}catch(e){AD.rewardReady=false;AD.rfail=true;setTimeout(prepReward,90000);if(AD.autoNext){AD.autoNext=false;toast('El video no está disponible en este momento. Probá en un rato desde el inicio.')}}refreshAdBtns();
+ if(AD.rewardReady&&AD.autoNext&&!document.querySelector('.modal'))watchReward()}
 async function prepInter(){const am=PL('AdMob');if(!am||!AD.ok)return;
  try{await am.prepareInterstitial(adOpts(AD_IDS.inter));AD.interReady=true}catch(e){AD.interReady=false;setTimeout(prepInter,90000)}}
-const adLeft=()=>{const t=+S.adLast||0,n=Date.now();if(t>n)S.adLast=n;return Math.max(0,(+S.adLast||0)+REWARD_CD-n)};
+// Videos con premio: tandas de 3 cada 3 horas. Después del primero se ofrece triplicar
+// (ver los otros 2). Si dice que no, pierde la tanda hasta que se cumplan las 3 horas.
+function rwState(){const n=Date.now();let w=S.rw;
+ if(!w||typeof w!=='object')w=S.rw={t:0,n:0,lost:false};
+ if(w.t>n)w.t=n;
+ if(w.t&&n-w.t>=REWARD_CD){w.t=0;w.n=0;w.lost=false}
+ return w}
+const rwLeft=()=>{const w=rwState();return w.t?Math.max(0,w.t+REWARD_CD-Date.now()):0};
+const rwCan=()=>{const w=rwState();return w.n===0||(w.n<REWARD_SET&&!w.lost)};
 const fmtLeft=ms=>{const m=Math.ceil(ms/60000),h=Math.floor(m/60),r=m%60;return h?`${h} h${r?' '+r+' min':''}`:`${r} min`};
-function adBtn(){if(!NAT||!AD.ok)return '';if(adToday()>=REWARD_MAX)return '<button class="btn ghost adbtn" disabled>Ya viste tus 2 videos de hoy</button>';const l=adLeft();
- if(l>0)return `<button class="btn ghost adbtn" disabled>Próximo video con premio en ${fmtLeft(l)}</button>`;
+function adBtn(){if(!NAT||!AD.ok)return '';
+ if(!rwCan())return `<button class="btn ghost adbtn" disabled>Próximos videos con premio en ${fmtLeft(rwLeft())}</button>`;
  if(AD.rfail&&!AD.rewardReady)return '';
- return `<button class="btn adbtn" data-act="rewardad"${AD.rewardReady?'':' disabled'}>${AD.rewardReady?`Ver video: +${REWARD_XP} XP`:'Cargando video…'}</button>`}
+ const w=rwState(),lbl=w.n===0?`Ver video: +${REWARD_XP} XP`:`Seguir triplicando: video ${w.n+1} de ${REWARD_SET}`;
+ return `<button class="btn adbtn" data-act="rewardad"${AD.rewardReady?'':' disabled'}>${AD.rewardReady?lbl:'Cargando video…'}</button>`}
 function refreshAdBtns(){document.querySelectorAll('.adslot').forEach(el=>{el.innerHTML=adBtn()})}
-async function watchReward(){const am=PL('AdMob');if(!am||!AD.rewardReady||adLeft()>0||adToday()>=REWARD_MAX)return;
- AD.rewardReady=false;AD.waitReward=true;refreshAdBtns();
+async function watchReward(){const am=PL('AdMob');if(!am||!rwCan())return;
+ if(!AD.rewardReady){AD.autoNext=true;toast('Cargando el próximo video…',4000);return}
+ AD.autoNext=false;AD.rewardReady=false;AD.waitReward=true;refreshAdBtns();
  try{await am.showRewardVideoAd()}catch(e){AD.waitReward=false;toast('El video no está disponible en este momento. Intentá más tarde.');prepReward()}}
-function grantReward(){const r0=recs(),d=today();S.adxp[d]=adToday()+1;S.adLast=Date.now();track('ver_video_premio');
- pop.push({svg:icon('skills',96),k:'Recompensa obtenida',title:`+${REWARD_XP} XP`,sub:'Los puntos se sumaron a tu progreso.'});
- syncAll();newRecs(r0,recs());save();render();showPop()}
+function grantReward(){const r0=recs(),d=today(),w=rwState();S.adxp[d]=adToday()+1;S.adLast=Date.now();
+ if(w.n===0)w.t=Date.now();w.n++;track('ver_video_premio',{n:w.n});
+ if(w.n>=REWARD_SET)pop.push({svg:px(stand('clap'),5),k:'¡Toma final!',title:`XP triplicada: +${REWARD_XP*REWARD_SET} XP`,sub:'Los puntos se sumaron a tu progreso.'});
+ syncAll();newRecs(r0,recs());save();render();
+ if(w.n<REWARD_SET)triModal(w.n);else showPop()}
+// Cartel de triplicar, con el jugador sosteniendo una claqueta de cine
+function triModal(step){const old=$('#trim');if(old)old.remove();const first=step===1;
+ const m=document.createElement('div');m.className='modal';m.id='trim';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+ m.innerHTML=`<div class="mcard tri"><div class="k hd">${first?'Toma 1 lista':'Toma 2 lista'}</div>${px(stand('clap'),5)}
+  <h2 class="hd">${first?'¿Triplicás tu XP?':'Te falta una toma'}</h2>
+  <p>${first?`Ya sumaste +${REWARD_XP} XP. Mirá 2 videos más y te llevás +${REWARD_XP*REWARD_SET} XP en total.`:`Llevás +${REWARD_XP*2} XP. Mirá el último video y completás +${REWARD_XP*REWARD_SET} XP.`}</p>
+  <button class="btn" data-act="triyes">${first?'Sí, triplicar':'Ver el último video'}</button>
+  <button class="btn ghost" data-act="trino">${first?'No, gracias':`Quedarme con +${REWARD_XP*2} XP`}</button>
+  <small class="trin">${first?'Si decís que no, perdés esta tanda hasta dentro de 3 horas.':'Si lo dejás, la próxima tanda es en 3 horas.'}</small></div>`;
+ document.body.appendChild(m);m.querySelector('button').focus()}
+// El banner va dentro de un "cartel de la cancha": pasto, línea de cal, luces y la etiqueta PUBLICIDAD.
+const BOARD_H=25;
 function padBanner(){const ins=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom'))||0;
- const h=AD.bannerOn&&!AD.bfail?((AD.bh||60)+ins):0;document.documentElement.style.setProperty('--adh',h+'px');document.body.style.paddingBottom=h?h+'px':''}
-function updBanner(){const am=PL('AdMob');if(!am||!AD.ok)return;const want=view==='main'&&BANNER_TABS.includes(tab);
+ const on=AD.bannerOn&&!AD.bfail,h=on?((AD.bh||60)+ins+BOARD_H):0;document.documentElement.style.setProperty('--adh',h+'px');document.body.style.paddingBottom=h?h+'px':'';
+ let b=$('#adboard');if(on&&!b){b=document.createElement('div');b.id='adboard';b.setAttribute('aria-hidden','true');b.innerHTML='<div class="lab"><i></i><span>Publicidad</span><i></i></div>';document.body.appendChild(b)}
+ if(b){b.hidden=!on;b.style.height=h+'px'}}
+function updBanner(){const am=PL('AdMob');if(!am||!AD.ok)return;const want=view==='main'&&(BANNER_TABS.includes(tab)||(tab==='perfil'&&S.firstSaveDone));
  if(want&&!AD.bannerOn){AD.bannerOn=true;
   (AD.bannerMade?am.resumeBanner():am.showBanner({...adOpts(AD_IDS.banner),adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0}).then(()=>{AD.bannerMade=true})).catch(()=>{AD.bannerOn=false;padBanner()})}
  else if(!want&&AD.bannerOn){AD.bannerOn=false;am.hideBanner().catch(()=>{})}
@@ -952,6 +992,8 @@ document.addEventListener('click',e=>{
  if(a==='doinstall'){if(window._installPrompt)window._installPrompt();return}
  if(a==='installno'){if(window._installDismiss)window._installDismiss();return}
  if(a==='rewardad'){watchReward();return}
+ if(a==='triyes'){const m=$('#trim');if(m)m.remove();watchReward();return}
+ if(a==='trino'){const m=$('#trim');if(m)m.remove();const w=rwState();w.lost=true;AD.autoNext=false;save();refreshAdBtns();track('triplicar_no',{n:w.n});showPop();maybeInter();return}
  if(a==='dokick'){doKick();return}
  if(a==='owner'){ownerTap();return}
  if(a==='navr'||a==='navl'){const nv=$('.navw nav');if(nv)nv.scrollBy({left:a==='navr'?220:-220,behavior:'smooth'});return}
